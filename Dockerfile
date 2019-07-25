@@ -2,9 +2,19 @@ FROM debian:jessie
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
+ARG MAVEN_VERSION=3.3.9
+ARG BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
+
+ARG JENKINS_USER="10011"
+ARG JENKINS_USERNAME="cicduser"
+
 ENV AZURE_CLI_VERSION "0.10.13"
 ENV NODEJS_APT_ROOT "node_6.x"
 ENV NODEJS_VERSION "6.10.0"
+
+RUN groupadd --gid $JENKINS_USER $JENKINS_USERNAME && \
+  adduser --disabled-password --quiet --uid $JENKINS_USER --gid $JENKINS_USER --gecos '' $JENKINS_USERNAME && \
+  usermod -aG sudo $JENKINS_USERNAME
 
 RUN apt-get update -qq && \
   apt-get install -qqy --no-install-recommends\
@@ -39,7 +49,19 @@ RUN apt-get -o Acquire::Check-Valid-Until=false update
 
 RUN apt-get install -y -t jessie-backports openjdk-8-jdk ca-certificates-java
 
+RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
+  && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+  && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
+  && rm -f /tmp/apache-maven.tar.gz \
+  && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
+ENV MAVEN_HOME /usr/share/maven  
+
+ENV http_proxy=http://nonprod.inetgw.aa.com:9093/ \
+  https_proxy=http://nonprod.inetgw.aa.com:9093/ \
+  no_proxy="artifacts.aa.com, nexusread.aa.com"
+
+USER root
 
 # Setup JAVA_HOME
 # ENV JAVA_HOME /usr/bin
