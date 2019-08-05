@@ -49,6 +49,8 @@ RUN apt-get -o Acquire::Check-Valid-Until=false update
 
 RUN apt-get install -y -t jessie-backports openjdk-8-jdk ca-certificates-java
 
+COPY cacert.pem /etc/ssl/certs/java/cacerts
+
 RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
   && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
   && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
