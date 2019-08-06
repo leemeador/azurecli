@@ -47,9 +47,9 @@ RUN echo "deb [check-valid-until=no] http://archive.debian.org/debian jessie-bac
 RUN sed -i '/deb http:\/\/deb.debian.org\/debian jessie-updates main/d' /etc/apt/sources.list
 RUN apt-get -o Acquire::Check-Valid-Until=false update
 
-RUN apt-get install -y -t jessie-backports openjdk-8-jdk ca-certificates-java
-
-COPY cacert.pem /etc/ssl/certs/java/cacerts
+RUN apt-get install -y -t jessie-backports openjdk-8-jdk 
+#ca-certificates-java
+COPY cacert.pem /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacert.pem
 
 RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
   && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
