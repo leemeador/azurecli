@@ -62,7 +62,7 @@ ENV MAVEN_HOME /usr/share/maven
 ENV http_proxy=http://nonprod.inetgw.aa.com:9093/ \
   https_proxy=http://nonprod.inetgw.aa.com:9093/ \
   no_proxy="artifacts.aa.com, nexusread.aa.com"
-
+RUN mkdir -p /application/target
 USER root
 
 # Setup JAVA_HOME
